@@ -7,6 +7,7 @@ import os
 from datetime import datetime, timedelta, timezone
 import requests
 from bs4 import BeautifulSoup
+from urllib.parse import urljoin
 
 load_dotenv()
 
@@ -79,7 +80,7 @@ print(f"SAS : {sas}")
 
 
 # URL principale d'Inside Airbnb
-base_url = "http://insideairbnb.com/get-the-data.html"
+base_url = "https://huggingface.co/datasets/Marqo/amazon-products-eval/tree/main/data"
 
 # Faire une requête à la page principale
 response = requests.get(base_url)
@@ -92,20 +93,16 @@ soup = BeautifulSoup(response.text, "html.parser")
 
 # Trouver tous les liens contenant des données pour l'Espagne
 links = soup.find_all("a", href=True)
-spain_links = [link["href"] for link in links if "spain" in link["href"]]
 
+links = [urljoin("https://huggingface.co",link["href"]) for link in links if link["href"].endswith(".parquet")]
 
-# Télécharger et uploader chaque fichier avec un SAS Token 
-for url in spain_links:
+# Télécharger et uploader chaque fichier avec le SAS
+for url in links:
     # Extraire le chemin cible depuis l'URL (exemple : catalonia/barcelona/reviews.csv)
     filename = url.split("/")[-1]
-    region_city = "/".join(url.split("/")[-5:-3])  # Exemple : catalonia/barcelona
-    local_path = os.path.join(f"{region_city.replace('/', '_')}_{filename}")
-    blob_path = f"airbnb/spain/{local_path}"
-    print(blob_path)
+    blob_path = f"huggingface/{filename}"
 
     sas_url = f"https://{storage_account_name}.blob.core.windows.net/datastorage/{blob_path}?{sas}"
-    print(sas_url)
 
     # Télécharger le fichier depuis l'URL
     print(f"Téléchargement et upload de {url} vers {blob_path}...")
@@ -132,12 +129,9 @@ print("Tous les fichiers ont été uploadés directement dans le Data Lake.")
 
                                                         
 # Télécharger et uploader chaque fichier sans SAS 
-for url in spain_links:
-    # Extraire le chemin cible depuis l'URL (exemple : catalonia/barcelona/reviews.csv)
+for url in links:
     filename = url.split("/")[-1]
-    region_city = "/".join(url.split("/")[-5:-3])  # Exemple : catalonia/barcelona
-    local_path = os.path.join(f"{region_city.replace('/', '_')}_{filename}")
-    blob_path = f"airbnb/spain/{local_path}"
+    blob_path = f"huggingface/{filename}"
 
     # Création du Blob Client
     blob_client = blob_service_client.get_blob_client(container="datastorage", blob=blob_path)

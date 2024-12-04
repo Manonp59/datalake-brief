@@ -24,7 +24,11 @@ Les ressources créées depuis le portail Azure sont :
 - un datalake : **adlsplatteau**
 - un container dans le datalake : **datastorage**
 
-Dans la configuration du datalake, le rôle de **Storage Blob Delegator** est attribué au service principal, ce qui lui permettra de créer des SAS Token. 
+Dans la configuration du datalake, le rôle de **Storage Blob Delegator** est attribué au service principal, ce qui lui permettra de créer des SAS Token. Toutefois, le SAS token généré ne va hériter que de ce rôle de Delegator, ce qui ne permet pas d'écrire dans le datalake. Il faut donc également ajouter le rôle **Storage Blob Data Contributor**. 
+Finalement, le rôle **Storage Blob Data Contributor** est suffisant car il inclut beaucuop de droits. Si on utilise ce rôle, on peut écrire dans le Blob sans SAS. 
+Donc ça fonctionne uniquement si on a le rôle **Storage Blob Data Contributor** : 
+- avec le SAS, car il hérite de ce rôle Contributor ; 
+- sans le SAS, car il n'est pas nécessaire, le rôle Contributor permet déjà d'écrire dans le blob.
 
 ![dl-role](images/dl-role.png)
 
