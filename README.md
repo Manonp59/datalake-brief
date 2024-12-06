@@ -183,7 +183,7 @@ On peut exporter ces logs dans un **Log analytics workspace** en cliquant sur *E
 Dans le **Log Analytics Workspace**, on retrouve ces logs dans **Azure Activity** et on peut appliquer les mêmes filtres pour voir uniquement nos ressources : 
 ```sql 
 AzureActivity
-| where  ResourceGroup  == "RG_MPLATTEAU"
+| where  ResourceGroup  == "RG_*********"
 ```
 
 ### Metrics 
@@ -232,7 +232,7 @@ On utilise le même outil et, au lieu de choisir une métrique et un seuil, on e
 ```sql
  AzureActivity
 | where OperationNameValue contains "regeneratekey"
-| where ResourceGroup == "RG_MPLATTEAU"
+| where ResourceGroup == "RG_*********"
 ```
 Et on définit à partir de combien de lignes récupérées par la requête l'alerte est activée. Ici, on choisit 1 : dès qu'on a une regénération de clé, l'alerte est activée. 
 Pour cette alerte, on crée un groupe d'action pour lequel un SMS est envoyé et on définit le niveau de sévérité à 1 : Error. 
