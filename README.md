@@ -37,6 +37,8 @@ Il est conseillé de regénérer régulièrement les clés (il est possible de c
 - depuis le portail Azure 
 - avec Azure CLI.
 
+Les **storage access key** permettent un accès complet et facile au compte de stockage. Toutefois, il est conseillé de les utiliser dans des situations de test ou si les données ne sont pas sensibles car le niveau de sécurité est faible et ne elles ne permettent pas de gérer différents niveaux d'accès, elles donnent un accès global à la ressource. 
+
 ```bash
 az storage account keys renew \
     -- resource-group <resource-group> \
@@ -54,6 +56,8 @@ On peut avoir SAS au niveau “compte” : Account SAS, qui offre un accès glob
 
 On peut avoir un SAS au niveau “utilisateur” : User delegation SAS, qui est basée sur les identifiants Microsoft Entra ID. 
 
+Le principal avantage des **SAS** est la granularité des permissions : on peut gérer l'accès au niveau compte, blob, dossier... On peut aussi définir une durée de validité, ce qui rend les **SAS** particulièrement adaptés pour des cas d'usage où il faut accorder des permissions précises et temporaires. 
+
 ### Microsoft Entra ID 
 
 Service de gestion des identités et des accès informatiques des utilisateurs. Permet de gérer les utilisateurs, les applications et les ressources dans un environnement sécurisé. Fournit des identités uniques pour accéder à des applications. Permet de contrôler l’accès sur la base de rôles spécifiques attribués aux utilisateurs.
@@ -65,6 +69,8 @@ Stockage des secrets. Accès sécurisé aux secrets (ex: clé d’API, mots de p
 Pour s’authentifier auprès des key vault : 
 - identités managées 
 - service princpal
+
+L'utilisation du **keyvault** peut toutefois générer des coûts supplémentaires si l'accès et la rotation des secrets sont fréquents.
 
 ### IAM et role-based access control (RBAC)
 
@@ -80,7 +86,7 @@ Sur la ressource dont on veut gérer les accès :
 
 Il est possible de demander une activation par l’utilisateur avant qu’il puisse utiliser ce rôle, de définir une durée d’activation de ce rôle. Un rôle peut être mis à jour ultérieurement. 
 
-
+Les rôles permettent une bonne granularité des permissions et leur intégration avec Entra ID permet de centraliser cette gestion des permissions. L'utilisation de ces rôles peut devenir complexe dans des grosses structures où les ressources et les rôles se multiplient.
 
 
 ## Partie 2 : Création et ingestion sécurisée sur le datalake 
