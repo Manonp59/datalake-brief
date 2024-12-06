@@ -95,6 +95,7 @@ soup = BeautifulSoup(response.text, "html.parser")
 links = soup.find_all("a", href=True)
 
 links = [urljoin("https://huggingface.co",link["href"]) for link in links if link["href"].endswith(".parquet")]
+links = links[0:14]
 
 # Télécharger et uploader chaque fichier avec le SAS
 for url in links:
@@ -128,24 +129,24 @@ print("Tous les fichiers ont été uploadés directement dans le Data Lake.")
                                                         ###### SOLUTION SANS LE SAS #######     
 
                                                         
-# Télécharger et uploader chaque fichier sans SAS 
-for url in links:
-    filename = url.split("/")[-1]
-    blob_path = f"huggingface/{filename}"
+# # Télécharger et uploader chaque fichier sans SAS 
+# for url in links:
+#     filename = url.split("/")[-1]
+#     blob_path = f"huggingface/{filename}"
 
-    # Création du Blob Client
-    blob_client = blob_service_client.get_blob_client(container="datastorage", blob=blob_path)
+#     # Création du Blob Client
+#     blob_client = blob_service_client.get_blob_client(container="datastorage", blob=blob_path)
 
-    # Télécharger le fichier depuis l'URL
-    print(f"Téléchargement et upload de {url} vers {blob_path}...")
-    response = requests.get(url, stream=True)
+#     # Télécharger le fichier depuis l'URL
+#     print(f"Téléchargement et upload de {url} vers {blob_path}...")
+#     response = requests.get(url, stream=True)
 
-    # Vérifier que la requête est réussie
-    if response.status_code == 200:
-        # Upload directement au Data Lake
-        blob_client.upload_blob(response.raw, overwrite=True)
-        print(f"Fichier {blob_path} uploadé avec succès.")
-    else:
-        print(f"Erreur lors du téléchargement de {url}: {response.status_code}")
+#     # Vérifier que la requête est réussie
+#     if response.status_code == 200:
+#         # Upload directement au Data Lake
+#         blob_client.upload_blob(response.raw, overwrite=True)
+#         print(f"Fichier {blob_path} uploadé avec succès.")
+#     else:
+#         print(f"Erreur lors du téléchargement de {url}: {response.status_code}")
 
-print("Tous les fichiers ont été uploadés directement dans le Data Lake.")
+# print("Tous les fichiers ont été uploadés directement dans le Data Lake.")

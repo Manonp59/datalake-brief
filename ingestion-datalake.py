@@ -93,6 +93,7 @@ soup = BeautifulSoup(response.text, "html.parser")
 # Trouver tous les liens contenant des données pour l'Espagne
 links = soup.find_all("a", href=True)
 spain_links = [link["href"] for link in links if "spain" in link["href"]]
+spain_links = spain_links[0:14]
 
 
 # Télécharger et uploader chaque fichier avec un SAS Token 
@@ -131,27 +132,27 @@ print("Tous les fichiers ont été uploadés directement dans le Data Lake.")
                                                         ###### SOLUTION SANS LE SAS #######     
 
                                                         
-# Télécharger et uploader chaque fichier sans SAS 
-for url in spain_links:
-    # Extraire le chemin cible depuis l'URL (exemple : catalonia/barcelona/reviews.csv)
-    filename = url.split("/")[-1]
-    region_city = "/".join(url.split("/")[-5:-3])  # Exemple : catalonia/barcelona
-    local_path = os.path.join(f"{region_city.replace('/', '_')}_{filename}")
-    blob_path = f"airbnb/spain/{local_path}"
+# # Télécharger et uploader chaque fichier sans SAS 
+# for url in spain_links:
+#     # Extraire le chemin cible depuis l'URL (exemple : catalonia/barcelona/reviews.csv)
+#     filename = url.split("/")[-1]
+#     region_city = "/".join(url.split("/")[-5:-3])  # Exemple : catalonia/barcelona
+#     local_path = os.path.join(f"{region_city.replace('/', '_')}_{filename}")
+#     blob_path = f"airbnb/spain/{local_path}"
 
-    # Création du Blob Client
-    blob_client = blob_service_client.get_blob_client(container="datastorage", blob=blob_path)
+#     # Création du Blob Client
+#     blob_client = blob_service_client.get_blob_client(container="datastorage", blob=blob_path)
 
-    # Télécharger le fichier depuis l'URL
-    print(f"Téléchargement et upload de {url} vers {blob_path}...")
-    response = requests.get(url, stream=True)
+#     # Télécharger le fichier depuis l'URL
+#     print(f"Téléchargement et upload de {url} vers {blob_path}...")
+#     response = requests.get(url, stream=True)
 
-    # Vérifier que la requête est réussie
-    if response.status_code == 200:
-        # Upload directement au Data Lake
-        blob_client.upload_blob(response.raw, overwrite=True)
-        print(f"Fichier {blob_path} uploadé avec succès.")
-    else:
-        print(f"Erreur lors du téléchargement de {url}: {response.status_code}")
+#     # Vérifier que la requête est réussie
+#     if response.status_code == 200:
+#         # Upload directement au Data Lake
+#         blob_client.upload_blob(response.raw, overwrite=True)
+#         print(f"Fichier {blob_path} uploadé avec succès.")
+#     else:
+#         print(f"Erreur lors du téléchargement de {url}: {response.status_code}")
 
-print("Tous les fichiers ont été uploadés directement dans le Data Lake.")
+# print("Tous les fichiers ont été uploadés directement dans le Data Lake.")
